@@ -1,5 +1,0 @@
-LoginName,LoginType,DefaultDatabase,SysAdmin,SecurityAdmin,ServerAdmin,SetupAdmin,ProcessAdmin,DiskAdmin,DBCreator,BulkAdmin
-volexreader,SQL_LOGIN,master,1,0,0,0,0,0,0,0
-UK\UK-SG TaxWorkflow_Support,WINDOWS_GROUP,master,0,0,0,0,0,0,0,0
-UK\UK-SG_TTG_ADMIN,WINDOWS_GROUP,master,0,0,0,0,0,0,0,0
-UK\-oper-briandonnelly2,WINDOWS_LOGIN,master,0,0,0,0,0,0,0,0
