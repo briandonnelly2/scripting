@@ -1,0 +1,28 @@
+USE [TaxywinCOE]
+
+SELECT
+
+c.Active
+,c.FIRSTNAMES
+,c.SURNAME
+,c.REFCODE
+,gc.GroupId
+,tf.[YEAR]
+
+FROM Client c
+
+LEFT JOIN TaxForm tf ON c.CLIENTID=tf.CLIENTID
+LEFT JOIN [GroupClient] gc ON c.CLIENTID=gc.Clientid
+
+WHERE
+gc.GroupId IS NULL
+AND
+c.REFCODE IS NOT NULL
+AND
+c.REFCODE NOT LIKE '%Dgc~' AND c.REFCODE NOT LIKE '%test%' AND c.REFCODE NOT LIKE '%DNU%' 
+	AND c.REFCODE NOT LIKE '%duplicate%' AND c.REFCODE NOT LIKE '%old' AND c.REFCODE NOT LIKE '% USE' 
+		AND c.FIRSTNAMES NOT LIKE 'test%' AND c.SURNAME NOT LIKE '% NOT %' 
+AND
+c.Active=1
+
+ORDER BY tf.[YEAR]

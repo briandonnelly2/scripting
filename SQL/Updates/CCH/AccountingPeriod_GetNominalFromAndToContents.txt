@@ -1,0 +1,125 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'AP.AccountingPeriod_GetNominalFromAndToContents') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+	Drop procedure AP.AccountingPeriod_GetNominalFromAndToContents
+Go
+
+-------------------------------------------------------------------------------------------
+/*
+	Written By:	Jon Coello
+	Date:		31/03/2010
+	Reason:		Get the nominals between a start and end nominal and their balances
+	
+	Modified by:	Robin Bhandari
+	Date:			21-03-2011
+	Reason:			Alias of debit and credit incorrect
+	
+	Modified by:	Robin Bhandari
+	Date:			22-06-2011
+	Reason:			Need to cater for restatement journals - join on to the comparative
+					trial balance view
+					
+	Modified by:	Adrian Paul
+	Date:			25-06-2013
+	Reason:			Added parent nominalcodes only for subcoded nominals
+
+	PM-18/05/16 - Added in returns for the group amounts...
+	JF-19/04/20 - Removed returns for the group amounts...
+	JF-13/03/22 - ADO/227735 - Remove columns NominalHash and NominalHashAlpha
+	JF-27/02/24 - Speed up based on AccountingPeriod_GetNameRangeDetails
+	JF-23/04/24 - ADO/333941 - Remove fn_NominalContentsLookup as it causes an issue if both 9900 and 990001 have a balance.
+	
+*/
+-------------------------------------------------------------------------------------------
+
+Create Procedure AP.AccountingPeriod_GetNominalFromAndToContents
+
+	@AccountingPeriodId INT,
+	@PeriodCode VARCHAR(100),
+	@StartNominal VARCHAR(100) = NULL,
+	@EndNominal VARCHAR(100) = NULL,
+	@IncludeZeroBals BIT = 1
+
+AS
+
+    -- Lookup the actual accounting period based on the period code supplied
+    DECLARE @periodId INT = (SELECT AccountingPeriodId FROM AP.FindUserReference(@AccountingPeriodId, @PeriodCode))
+
+	-- Get chart for accounting period
+	CREATE TABLE #Chart (NominalCode VARCHAR(100) COLLATE database_default PRIMARY key, Description VARCHAR(150))
+
+	-- Used nominals including locals from the other accounting periods
+	INSERT INTO #Chart
+		(NominalCode, Description)
+	SELECT
+		NominalCode,
+		Description
+	FROM
+		AP.NominalsUsed nu
+	WHERE
+		AccountingPeriodId = @PeriodId
+
+	-- Unused master nominals
+	INSERT INTO	#Chart
+		(NominalCode, Description)
+	SELECT
+		cnh.NominalCode,
+		cnh.Description
+	FROM AP.fn_ChartNominalHistory(@periodId) cnh
+	WHERE
+		NOT EXISTS ( SELECT * FROM #Chart c WHERE c.NominalCode = cnh.NominalCode )
+
+	DECLARE @Results TABLE (NominalCode VARCHAR(100), RoundedAmount Money, RoundedCredit Money, RoundedDebit Money,
+		AJTAmount Money, AJTDebit Money, AJTCredit Money)
+
+	INSERT INTO @Results (NominalCode, RoundedAmount, RoundedCredit, RoundedDebit,
+		AJTAmount, AJTDebit, AJTCredit)
+	SELECT
+		NominalCode, RoundedAmount, RoundedCredit, RoundedDebit,
+		AJTAmount, AJTDebit, AJTCredit
+	FROM
+		AP.fn_TBRounded(@periodId, NULL, @AccountingPeriodId, @periodCode)
+	WHERE
+		(@StartNominal IS NULL AND @EndNominal IS NULL) OR (NominalCode BETWEEN @StartNominal AND @EndNominal)
+			
+	IF @IncludeZeroBals = 1 BEGIN
+
+		SELECT 
+			c.NominalCode,
+			c.Description,
+			ISNULL(RoundedAmount, 0) Amount,
+			ISNULL(RoundedCredit, 0) Credit,
+			ISNULL(RoundedDebit, 0) Debit,
+			ISNULL(AJTAmount,0) AJTAmount,
+			ISNULL(AJTDebit,0) AJTDebit,
+			ISNULL(AJTCredit,0) AJTCredit,
+			ISNULL(RoundedAmount,0) - ISNULL(AJTAmount,0) AJTBalance,
+			ISNULL(RoundedDebit,0) - ISNULL(AJTDebit,0) AJTDebitBalance,
+			ISNULL(RoundedCredit,0) - ISNULL(AJTCredit,0) AJTCreditBalance
+		FROM 
+			#Chart c
+			LEFT JOIN @Results r ON r.NominalCode = c.NominalCode
+		ORDER BY 
+			c.NominalCode	
+
+	END ELSE BEGIN
+
+		SELECT 
+			c.NominalCode,
+			c.Description,
+			ISNULL(RoundedAmount, 0) Amount,
+			ISNULL(RoundedCredit, 0) Credit,
+			ISNULL(RoundedDebit, 0) Debit,
+			ISNULL(AJTAmount,0) AJTAmount,
+			ISNULL(AJTDebit,0) AJTDebit,
+			ISNULL(AJTCredit,0) AJTCredit,
+			ISNULL(RoundedAmount,0) - ISNULL(AJTAmount,0) AJTBalance,
+			ISNULL(RoundedDebit,0) - ISNULL(AJTDebit,0) AJTDebitBalance,
+			ISNULL(RoundedCredit,0) - ISNULL(AJTCredit,0) AJTCreditBalance
+		FROM 
+			#Chart c
+			JOIN @Results r ON r.NominalCode = c.NominalCode
+		ORDER BY 
+			c.NominalCode	
+
+	END
+
+GO

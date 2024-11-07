@@ -1,0 +1,16 @@
+USE [Sequence]
+
+SELECT * FROM UACT1a10a938c1a1438fa1a46d85cec061a6 --Time & Decision
+	WHERE fldIActId = 345203429
+
+--BEGIN TRAN
+
+--UPDATE UACT1a10a938c1a1438fa1a46d85cec061a6
+--SET [Hours] = NULL, [Minutes] = 50
+--WHERE fldIActId = 345203429
+
+--SELECT * FROM UACT1a10a938c1a1438fa1a46d85cec061a6 --Time & Decision
+--	WHERE fldIActId = 345203429
+
+--ROLLBACK
+----COMMIT

@@ -1,0 +1,28 @@
+  USE [CCHCentral_Live]
+
+  --Workflow	2020.200.10623.2
+
+  SELECT [ApplicationVersionID],[Date],av.[ProductID],p.[ProductName],[Minor],[Build],[Revision],[Comments]
+  FROM [ApplicationVersion] AS av
+  INNER JOIN [Product] AS p ON p.ProductId = av.ProductID
+  ORDER BY [Major],[Minor],[Build],[Revision]
+
+  --DECLARE @Date DATE = '2020-07-29 00:00:00' --Today's date
+  --DECLARE @ProductID INT = '19' --19 is for the workflow service
+  --DECLARE @Major INT = '2020'
+  --DECLARE @Minor INT = '200'
+  --DECLARE @Build INT = '2006'
+  --DECLARE @Revision INT = '10401'
+  --DECLARE @Comments NVARCHAR(100) = 'Workflow v 2020.200.2006.10401'
+
+  --BEGIN TRAN
+
+  --INSERT INTO ApplicationVersion([Date],ProductID,Major,Minor,Build,Revision,Comments)
+  --VALUES(@Date,@ProductID,@Major,@Minor,@Build,@Revision,@Comments)
+
+  --SELECT [ApplicationVersionID],[Date],[ProductID],[Major],[Minor],[Build],[Revision],[Comments]
+  --FROM [ApplicationVersion]
+  --ORDER BY [Major],[Minor],[Build],[Revision]
+
+  ----ROLLBACK
+  --COMMIT

@@ -1,0 +1,7 @@
+declare @who table(spid int, ecid int, status nvarchar(255), loginame nvarchar(255), hostname nvarchar(255), blk int, dbname nvarchar(255), cmd nvarchar(255), request_id int)
+
+insert into @who exec sp_who
+
+select * from @who where dbname like 'Taxy%' 
+
+--KILL 80

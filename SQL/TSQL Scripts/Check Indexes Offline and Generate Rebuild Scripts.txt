@@ -1,0 +1,6 @@
+SELECT 'ALTER INDEX ' + QUOTENAME(I.name) + ' ON ' +  QUOTENAME(SCHEMA_NAME(T.schema_id))+'.'+ QUOTENAME(T.name) + ' REBUILD' 
+FROM sys.indexes I
+INNER JOIN sys.tables T ON I.object_id = T.object_id
+WHERE I.type_desc = 'NONCLUSTERED'
+AND I.name IS NOT NULL
+AND I.is_disabled = 1
