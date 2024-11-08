@@ -177,8 +177,6 @@ Function Get-KPMGADGroup {
 
     $ErrorActionPreference = "SilentlyContinue"
 
-    Process {
-
         foreach ( $Identity IN $Identities ) {
             Try {
                 Write-Verbose "Searching AD for [$($Identity)]"
@@ -254,8 +252,6 @@ Function Get-KPMGADGroup {
             }
         }
     }
-}
-
 Function Add-KPMGADUser {
 <# 
     .SYNOPSIS

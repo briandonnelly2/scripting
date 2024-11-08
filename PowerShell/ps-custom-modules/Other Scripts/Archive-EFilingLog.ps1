@@ -76,8 +76,6 @@ Import-Module -Name KPMG-Logging
 
 #endregion Global Variables
 
-Process{
-
     Try{
         #region Configure Logging
 
@@ -122,4 +120,3 @@ Process{
             Write-Error "ERROR: $($_.Exception.message)"
         }
     }
-}

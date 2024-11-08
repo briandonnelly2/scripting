@@ -3,7 +3,7 @@ Function Stop-WorkflowEnvironment {
         .SYNOPSIS
             Stops the Sequence Workflow Environment
         .DESCRIPTION
-            This script will stop an entire Sequence Workflow environment given an environment name.
+            This function will stop an entire Sequence Workflow environment given an environment name.
         .PARAMETER Environment <String>
             The environment you are stopping, DEV, UAT or PROD
         .INPUTS
@@ -136,7 +136,7 @@ Function Stop-WorkflowEnvironment {
                 Write-Output $Message
                 
                 #Prints a message telling the user how to check the envuironment is stopped.
-                $Message = "To check this, run Check-Sequence -Environment " + "'" + $Environment + "'"
+                $Message = "To check this, run Assert-SequenceEnvironment -Environment " + "'" + $Environment + "'"
                 Write-Output $Message
             }
             catch {
@@ -203,7 +203,7 @@ Function Stop-WorkflowEnvironment {
                 Write-Output $Message
                 
                 #Prints a message telling the user how to check the envuironment is stopped.
-                $Message = "To check this, run Check-Sequence -Environment " + "'" + $Environment + "'"
+                $Message = "To check this, run Assert-SequenceEnvironment -Environment " + "'" + $Environment + "'"
                 Write-Output $Message
             }
             catch {
@@ -270,7 +270,7 @@ Function Stop-WorkflowEnvironment {
                 Write-Output $Message
                 
                 #Prints a message telling the user how to check the envuironment is stopped.
-                $Message = "To check this, run Check-Sequence -Environment " + "'" + $Environment + "'"
+                $Message = "To check this, run Assert-SequenceEnvironment -Environment " + "'" + $Environment + "'"
                 Write-Output $Message
             }
             catch {
@@ -288,7 +288,7 @@ Function Start-WorkflowEnvironment {
         .SYNOPSIS
             Starts the Sequence Workflow Environment
         .DESCRIPTION
-            This script will start an entire Sequence Workflow environment given an environment name.
+            This function will start an entire Sequence Workflow environment given an environment name.
         .PARAMETER Environment <String>
             The environment you are starting, DEV, UAT or PROD
         .INPUTS
@@ -422,7 +422,7 @@ Function Start-WorkflowEnvironment {
                 Write-Output $Message
                 
                 #Prints a message telling the user how to check the envuironment is stopped.
-                $Message = "To check this, run Check-Sequence -Environment " + "'" + $Environment + "'"
+                $Message = "To check this, run Assert-SequenceEnvironment -Environment " + "'" + $Environment + "'"
                 Write-Output $Message
             }
             catch {
@@ -489,7 +489,7 @@ Function Start-WorkflowEnvironment {
                 Write-Output $Message
                 
                 #Prints a message telling the user how to check the envuironment is stopped.
-                $Message = "To check this, run Check-Sequence -Environment " + "'" + $Environment + "'"
+                $Message = "To check this, run Assert-SequenceEnvironment -Environment " + "'" + $Environment + "'"
                 Write-Output $Message
             }
             catch {
@@ -556,7 +556,7 @@ Function Start-WorkflowEnvironment {
                 Write-Output $Message
                 
                 #Prints a message telling the user how to check the envuironment is stopped.
-                $Message = "To check this, run Check-Sequence -Environment " + "'" + $Environment + "'"
+                $Message = "To check this, run Assert-SequenceEnvironment -Environment " + "'" + $Environment + "'"
                 Write-Output $Message
             }
             catch {
@@ -574,7 +574,7 @@ Function Restart-WorkflowEnvironment {
         .SYNOPSIS
             Restarts the Sequence Workflow Environment
         .DESCRIPTION
-            This script will restart an entire Sequence Workflow environment given an environment name.
+            This function will restart an entire Sequence Workflow environment given an environment name.
         .PARAMETER Environment <String>
             The environment you are restarting, DEV, UAT or PROD
         .INPUTS
@@ -702,7 +702,7 @@ Function Restart-WorkflowEnvironment {
                         Write-Output $Message
                         
                         #Prints a message telling the user how to check the envuironment is currently.
-                        $Message = "To check this, run Check-Sequence -Environment " + "'" + $Environment + "'"
+                        $Message = "To check this, run Assert-SequenceEnvironment -Environment " + "'" + $Environment + "'"
                         Write-Output $Message
                     }
                 }
@@ -765,7 +765,7 @@ Function Restart-WorkflowEnvironment {
                         Write-Output $Message
                         
                         #Prints a message telling the user how to check the envuironment is currently.
-                        $Message = "To check this, run Check-Sequence -Environment " + "'" + $Environment + "'"
+                        $Message = "To check this, run Assert-SequenceEnvironment -Environment " + "'" + $Environment + "'"
                         Write-Output $Message
                     }
                 }
@@ -828,7 +828,7 @@ Function Restart-WorkflowEnvironment {
                         Write-Output $Message
                         
                         #Prints a message telling the user how to check the envuironment is currently.
-                        $Message = "To check this, run Check-Sequence -Environment " + "'" + $Environment + "'"
+                        $Message = "To check this, run Assert-SequenceEnvironment -Environment " + "'" + $Environment + "'"
                         Write-Output $Message
                     }
                 }
@@ -848,7 +848,7 @@ Function Assert-WorkflowEnvironment {
     .SYNOPSIS
         Checks the sequence services and the service that runs IIS the Sequence Workflow Environment
     .DESCRIPTION
-        This script will check an entire Sequence Workflow environment given an environment name.
+        This function will check an entire Sequence Workflow environment given an environment name.
     .PARAMETER Environment <String>
         The environment you are checking, DEV, UAT or PROD
     .INPUTS
@@ -969,4 +969,50 @@ Function Assert-WorkflowEnvironment {
             }
         }
     }
+}
+
+Function Find-WorkflowLogs {
+    <#
+        .SYNOPSIS
+            Queries the event viewer for workflow logs.
+        .DESCRIPTION
+            This function will query the logs for a workflow environment. 
+            The log queried is Panam, which is what Sequence logs to on app and web servers.
+
+        .PARAMETER Environment <String>
+            The environment you are checking, DEV, UAT or PROD
+        .INPUTS
+            [String]
+        .EXAMPLE
+            Assert-WorkflowEnvironment -Environment 'DEV'
+        .EXAMPLE
+            Assert-WorkflowEnvironment -Environment 'UAT'
+        .NOTES
+            Name Find-WorkflowLogs
+            Creator Brian Donnelly
+            Date 07/11/2024
+            Updated N/A
+    #>
+
+    #VARIABLES
+
+    #logname (will be static as panam, only log that workflow uses)
+    #source
+    #FromTime
+    #ToTime
+    #newest
+    #Message
+
+    #Use switch to determing what kind of search is done
+
+    #Get-EventLog -ComputerName UKAZRAPP1007 -LogName panam -source BRS -After "06/11/2024 08:00:00" -Before "06/11/2024 09:00:00" -EntryType Error
+
+    #requires -runasadministrator
+    
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory, HelpMessage="An environment name is needed")]
+        [ValidateSet("DEV", "UAT", "PROD")]
+        [string]$Environment
+    )
 }
